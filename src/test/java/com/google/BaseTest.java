@@ -10,11 +10,11 @@ public class BaseTest {
     @DataProvider(name="request")
     protected static Object[][] requests(){
         return new Object[][]{
-                {"cat"},
-                {"frog crocodile cat dog"},
-                {"copyboook peglet"},
-                {"huohohuhohotfytftrsdswwq"},
-                {"(*&amp;$#%%)*_)"},
+                {"cat"},//one word
+                {"frog crocodile cat dog"},//with ARTICLE_WITH_VIDEO_PREVIEWS
+                {"copyboook peglet"},//2 words with typo
+                {"huohohuhohotfytftrsdswwq"},//no result
+                {"(*&$#%%)*_)"}//no words
         };
     }
 

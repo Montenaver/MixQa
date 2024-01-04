@@ -1,15 +1,16 @@
 package com.google;
 
-import com.codeborne.selenide.SelenideElement;
 import io.qameta.allure.Step;
 
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selenide.*;
 
 public class HomePage extends BasePage {
-    private String url = "https://www.google.com/";
-    private final SelenideElement searchBtn = $x("//div[@class='FPdoLc lJ9FBc']//input[@name='btnK']");
+    private final String url;
 
+    public HomePage(String url) {
+        this.url = url;
+    }
     @Step("Open Google Home Page")
     public HomePage openHomePage() {
         open(this.url);

@@ -1,0 +1,9 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="Adulthood Check">
+    <test name="Adulthood Check Test">
+        <classes>
+            <class name="birthdate.AdulthoodTest"/>
+        </classes>
+    </test>
+</suite>
