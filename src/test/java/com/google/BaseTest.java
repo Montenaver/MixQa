@@ -1,11 +1,18 @@
 package com.google;
 
+import com.codeborne.selenide.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 
 public class BaseTest {
     protected static final Logger logger = LogManager.getLogger(BaseTest.class);
+    @BeforeTest
+    public static void isHeadless() {
+    String headless = System.getProperty("headless");
+    Configuration.headless = headless != null && Boolean.parseBoolean(headless);
+    }
 
     @DataProvider(name="request")
     protected static Object[][] requests(){
