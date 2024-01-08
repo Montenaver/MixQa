@@ -3,16 +3,23 @@ package com.google;
 import com.codeborne.selenide.Configuration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.DataProvider;
 
 public class BaseTest {
     protected static final Logger logger = LogManager.getLogger(BaseTest.class);
     @BeforeTest
-    public static void isHeadless() {
-    String headless = System.getProperty("headless");
-    Configuration.headless = headless != null && Boolean.parseBoolean(headless);
-    }
+    public void setup() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--headless");
+
+        Configuration.browserCapabilities = new DesiredCapabilities();
+        Configuration.browserCapabilities.setCapability(ChromeOptions.CAPABILITY, options);
+}
 
     @DataProvider(name="request")
     protected static Object[][] requests(){
