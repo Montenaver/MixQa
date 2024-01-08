@@ -1,34 +1,9 @@
 <!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
 
 <suite name="Google Search">
-    <test name="Google Search Test - one word">
-<!--        <parameter name="request"  value="cat"/>-->
+    <test name="Google Search Test">
         <classes>
             <class name="com.google.GoogleSearchTest"/>
         </classes>
     </test>
-<!--    <test name="Google Search Test - with ARTICLE_WITH_VIDEO_PREVIEWS">-->
-<!--    <parameter name="request"  value="frog crocodile cat dog"/>-->
-<!--    <classes>-->
-<!--        <class name="com.google.GoogleSearchTest"/>-->
-<!--    </classes>-->
-<!--    </test>-->
-<!--    <test name="Google Search Test - 2 words with typo">-->
-<!--        <parameter name="request"  value="copyboook peglet"/>-->
-<!--        <classes>-->
-<!--            <class name="com.google.GoogleSearchTest"/>-->
-<!--        </classes>-->
-<!--    </test>-->
-<!--    <test name="Google Search Test - no result">-->
-<!--        <parameter name="request"  value="huohohuhohotfytftrsdswwq"/>-->
-<!--        <classes>-->
-<!--            <class name="com.google.GoogleSearchTest"/>-->
-<!--        </classes>-->
-<!--    </test>-->
-<!--    <test name="Google Search Test - no words">-->
-<!--        <parameter name="request"  value="(*&amp;$#%%)*_)"/>-->
-<!--        <classes>-->
-<!--            <class name="com.google.GoogleSearchTest"/>-->
-<!--        </classes>-->
-<!--    </test>-->
 </suite>

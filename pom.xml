@@ -34,12 +34,6 @@
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/io.qameta.allure/allure-java-commons -->
-        <dependency>
-            <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-java-commons</artifactId>
-            <version>${allure.commons.version}</version>
-        </dependency>
         <!-- https://logging.apache.org/log4j/2.x/maven-artifacts.html -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

@@ -3,7 +3,6 @@ package com.google;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
-import io.qameta.allure.Step;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -20,7 +19,6 @@ public class SearchResultPage extends BasePage{
     private static final SelenideElement showingResultsForBlock = $("#fprsl");
     private static final String REGEX_RESULT_STATS = "^[\\p{L}\\s]+(\\d+([,.]\\d{3})*)[\\p{L}\\s]+\\(\\d+[,.]\\d{2}[\\p{L}\\s/]+\\)\\s*$";
 
-    @Step("Check search result page title suits the request")
     public SearchResultPage checkTitle(String request){
         logger.info("Check search result page title suits the request");
         if (!Objects.requireNonNull(title()).contains(request)) {
@@ -29,21 +27,18 @@ public class SearchResultPage extends BasePage{
         }
         return this;
     }
-    @Step("Check search field contain the request")
     public SearchResultPage checkSearchFld(String request){
         logger.info("Check search field contain the request");
         searchFld.shouldBe(visible.because("search field should be visible")).
                 shouldHave((text(request).because("the text in search field should be the same as the request")));
         return this;
     }
-    @Step("Check result statistics displayed")
     public SearchResultPage checkResultStatistics(){
         //проверяем сообщение о количестве найденных результатов
         logger.info("Check result statistics displayed");
         resultStats.shouldBe(visible).shouldHave(matchText(REGEX_RESULT_STATS));
         return this;
     }
-    @Step("Check found articles")
     public void checkArticlesMatchRequest(String request){
         //Проверяем, что текст запроса соответствует найденным статьям (в упрощенной форме, просто делим запрос на слова и ищем совпадения)
         logger.info("Check found articles");
