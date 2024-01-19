@@ -2,53 +2,83 @@ package birthdate;
 
 import com.google.BaseTest;
 import org.example.CheckAge;
+import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.PrintStream;
-import java.text.ParseException;
-import java.util.Map;
-
-import static org.testng.Assert.assertEquals;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class AdulthoodTest extends BaseTest {
-    @Test(dataProvider = "csvData", dataProviderClass = CsvDataProviders.class)
-    public void checkAdulthood(Map<String, String> testData) {
-        String birthdate = testData.get("birthdate");
-        boolean expectedResult = Boolean.parseBoolean(testData.get("expectedResult"));
-
-        String inputData = "Enter your birthdate: " + birthdate + "\n";
-        InputStream originalSystemIn = System.in;
-        System.setIn(new ByteArrayInputStream(inputData.getBytes()));
-
-        try {
-            CheckAge.main(new String[]{birthdate});
-            String expectedOutput = expectedResult ? "You are adult: you are more than 18 years old\n" :
-                    "You are too young: you are less than 18 years old\n";
-            assertEquals(getOutput(birthdate), expectedOutput, """
-                Output for %s does not match expected result.
-                Expected output: %s
-                Actual output: %s
-                """.formatted(birthdate, expectedOutput, getOutput(birthdate)));
-        } catch (ParseException e) {
-            throw new RuntimeException("Error in date parsing. Make sure the date is in the correct format.");
-        } finally {
-            System.setIn(originalSystemIn);
-        }
+    @Test(dataProvider = "birthdatePositive",
+            dataProviderClass = BirthdateDataProvider.class)
+    public void checkAgePositiveTest(String date, boolean expectedResult){
+        CheckAge checkAge = new CheckAge();
+        date = makeDateActual(date);
+        Assert.assertEquals(checkAge.isAdult(date), expectedResult);
     }
-    private String getOutput(String birthdate) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        PrintStream originalSystemOut = System.out;
-        try {
-            System.setOut(new PrintStream(baos));
-            CheckAge.main(new String[]{birthdate});
-        } catch (ParseException e) {
-            throw new RuntimeException("Error in date parsing. Make sure the date is in the correct format.");
-        } finally {
-            System.setOut(originalSystemOut);
+    @Test(dataProvider = "birthdateNegetive",
+            dataProviderClass = BirthdateDataProvider.class,
+            expectedExceptions = IllegalArgumentException.class,
+            expectedExceptionsMessageRegExp = "The date is not clear. Try the other format")
+    public void checkAgeNegativeTest(String date){
+        CheckAge checkAge = new CheckAge();
+        checkAge.isAdult(date);
+    }
+    private static String makeDateActual(String date) {
+        DateTimeFormatter[] formatters = {
+                DateTimeFormatter.ofPattern("MM-dd-yyy"),
+                DateTimeFormatter.ofPattern("dd-MM-yyy"),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+                DateTimeFormatter.ofPattern("MM.dd.yyyy"),
+                DateTimeFormatter.ofPattern("dd.MM.yyyy"),
+                DateTimeFormatter.ofPattern("yyyy.MM.dd"),
+                DateTimeFormatter.ofPattern("MM/dd/yyyy"),
+                DateTimeFormatter.ofPattern("yyyy/MM/dd"),
+                DateTimeFormatter.ofPattern("M/dd/yyyy"),
+                DateTimeFormatter.ofPattern("dd/ M/yyyy"),
+                DateTimeFormatter.ofPattern("yyyy/ M/dd"),
+                DateTimeFormatter.ofPattern("dd MM yyyy"),
+                DateTimeFormatter.ofPattern("MM dd yyyy"),
+                DateTimeFormatter.ofPattern("yyyy MM dd"),
+                DateTimeFormatter.ofPattern("MMM dd yyyy"),
+                DateTimeFormatter.ofPattern("dd MM yyyy"),
+                DateTimeFormatter.ofPattern("yyyy MMM dd"),
+                DateTimeFormatter.ofPattern("dd/M/yyyy"),
+                DateTimeFormatter.ofPattern("yyyy/M/dd"),
+                DateTimeFormatter.ofPattern("MMM dd yyyy"),
+                DateTimeFormatter.ofPattern("dd MMM yyyy"),
+                DateTimeFormatter.ofPattern("yyyy MMM d"),
+                DateTimeFormatter.ofPattern("MMM d, yyyy"),
+                DateTimeFormatter.ofPattern("d MMM, yyyy"),
+                DateTimeFormatter.ofPattern("yyyy, MMM d"),
+                DateTimeFormatter.ofPattern("MMM-dd-yyyy"),
+                DateTimeFormatter.ofPattern("dd-MMM-yyyy"),
+                DateTimeFormatter.ofPattern("yyyy-MMM-dd"),
+                DateTimeFormatter.ofPattern("MMMM d, yyyy"),
+                DateTimeFormatter.ofPattern("d MMMM, yyyy"),
+                DateTimeFormatter.ofPattern("yyyy, MMMM d"),
+        };
+        for (DateTimeFormatter formatter : formatters) {
+            try {
+                LocalDate parsedDate = LocalDate.parse(date, formatter);
+                parsedDate = addPeriod(parsedDate);
+                return parsedDate.format(formatter);
+            } catch (DateTimeParseException ignored) {
+            }
         }
-        return baos.toString();
+        throw new IllegalArgumentException("The test date is incorrect");
+    }
+    private static LocalDate addPeriod(LocalDate birthdate){
+        LocalDate currentDate = LocalDate.now();
+        LocalDate testCreationDate = LocalDate.of(2024, 01, 18);
+        Period period = Period.between(currentDate, testCreationDate);
+
+        int days = period.getDays();
+        int months = period.getMonths();
+        int years = period.getYears();
+
+        return birthdate.minusYears(years).minusMonths(months).minusDays(days);
     }
 }

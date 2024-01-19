@@ -1,51 +1,72 @@
 package org.example;
 
-import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 public class CheckAge {
-    public static void main(String[] args) throws ParseException {
-        //Это просто пример метода, который обрабатывает введенную дату рожения и выдает, есть ли пользователю 18 лет
-        //Этот код реально работает плохо, но создание функции не было целью данного задания.
-        if (args.length > 0) {
-            String inputDate = args[0];
-            try {
-                if (isAdult(inputDate)) {
-                    System.out.println("You are adult: you are more than 18 years old");
-                } else {
-                    System.out.println("You are too young: you are less than 18 years old");
-                }
-            } catch (ParseException e) {
-                System.out.println("Error in date parsing. Make sure the date is in the correct format");
-            }
-        } else {
-            System.out.println("Please provide your birthdate as a command line argument.");
-        }
-    }
-
-    private static boolean isAdult(String birthDate) throws ParseException {
+    public boolean isAdult(String birthDate) {
         LocalDate dateOfBirth = parseDate(birthDate);
         LocalDate currentDate = LocalDate.now();
-
-        int ageInYears = currentDate.minusYears(dateOfBirth.getYear()).getYear();
-
-        return ageInYears >= 18;
+        if (!dateOfBirth.isAfter(currentDate)) {
+            Period period = Period.between(dateOfBirth, currentDate);
+            return period.getYears() >= 18;
+        } else {
+            throw new IllegalArgumentException("The date is not clear. Try the other format");
+        }
     }
-    private static LocalDate parseDate(String dateStr) {
+    private LocalDate parseDate(String birthDate) {
         DateTimeFormatter[] formatters = {
-                //Я не добавляла всвозможные форматы даты, так как это не было целью данного задания
+                DateTimeFormatter.ofPattern("MM-dd-yyy"),
+                DateTimeFormatter.ofPattern("dd-MM-yyy"),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd"),
+                DateTimeFormatter.ofPattern("MM.dd.yyyy"),
                 DateTimeFormatter.ofPattern("dd.MM.yyyy"),
+                DateTimeFormatter.ofPattern("yyyy.MM.dd"),
+                DateTimeFormatter.ofPattern("dd/ M/yyyy"),
+                DateTimeFormatter.ofPattern("yyyy/ M/dd"),
                 DateTimeFormatter.ofPattern("MM/dd/yyyy"),
-                DateTimeFormatter.ofPattern("d MMM yyyy")
+                DateTimeFormatter.ofPattern("yyyy/MM/dd"),
+                DateTimeFormatter.ofPattern("M/dd/yyyy"),
+                DateTimeFormatter.ofPattern("dd MM yyyy"),
+                DateTimeFormatter.ofPattern("MM dd yyyy"),
+                DateTimeFormatter.ofPattern("yyyy MM dd"),
+                DateTimeFormatter.ofPattern("MMM dd yyyy"),
+                DateTimeFormatter.ofPattern("dd MM yyyy"),
+                DateTimeFormatter.ofPattern("yyyy MMM dd"),
+                DateTimeFormatter.ofPattern("dd/M/yyyy"),
+                DateTimeFormatter.ofPattern("yyyy/M/dd"),
+                DateTimeFormatter.ofPattern("MMM dd yyyy"),
+                DateTimeFormatter.ofPattern("dd MMM yyyy"),
+                DateTimeFormatter.ofPattern("yyyy MMM d"),
+                DateTimeFormatter.ofPattern("MMM d, yyyy"),
+                DateTimeFormatter.ofPattern("d MMM, yyyy"),
+                DateTimeFormatter.ofPattern("yyyy, MMM d"),
+                DateTimeFormatter.ofPattern("MMM-dd-yyyy"),
+                DateTimeFormatter.ofPattern("dd-MMM-yyyy"),
+                DateTimeFormatter.ofPattern("yyyy-MMM-dd"),
+                DateTimeFormatter.ofPattern("MMMM d, yyyy"),
+                DateTimeFormatter.ofPattern("MMMM dd, yyyy"),
+                DateTimeFormatter.ofPattern("d MMMM, yyyy"),
+                DateTimeFormatter.ofPattern("yyyy, MMMM d"),
         };
         for (DateTimeFormatter formatter : formatters) {
             try {
-                return LocalDate.parse(dateStr, formatter);
-            } catch (Exception ignored) {
+                DateTimeFormatter smartFormatter = formatter.withResolverStyle(ResolverStyle.SMART);
+                LocalDate parsedDate = LocalDate.parse(birthDate, smartFormatter);
+                String parsedDateStr = parsedDate.format(smartFormatter);
+                isChanged(parsedDateStr, birthDate);
+                return parsedDate;
+            } catch (DateTimeParseException ignored) {
             }
         }
         throw new IllegalArgumentException("The date is not clear. Try the other format");
+    }
+    private void isChanged(String parsedDate, String birthDate){
+        if (!parsedDate.equals(birthDate)){
+            throw new IllegalArgumentException("The date is not clear. Try the other format");
+        }
     }
 }
