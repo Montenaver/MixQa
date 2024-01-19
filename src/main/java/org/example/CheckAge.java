@@ -7,6 +7,7 @@ import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
 
 public class CheckAge {
+    String expectedExceptionText = "The date is not clear. Try the other format";
     public boolean isAdult(String birthDate) {
         LocalDate dateOfBirth = parseDate(birthDate);
         LocalDate currentDate = LocalDate.now();
@@ -14,7 +15,7 @@ public class CheckAge {
             Period period = Period.between(dateOfBirth, currentDate);
             return period.getYears() >= 18;
         } else {
-            throw new IllegalArgumentException("The date is not clear. Try the other format");
+            throw new IllegalArgumentException(expectedExceptionText);
         }
     }
     private LocalDate parseDate(String birthDate) {
@@ -62,11 +63,11 @@ public class CheckAge {
             } catch (DateTimeParseException ignored) {
             }
         }
-        throw new IllegalArgumentException("The date is not clear. Try the other format");
+        throw new IllegalArgumentException(expectedExceptionText);
     }
     private void isChanged(String parsedDate, String birthDate){
         if (!parsedDate.equals(birthDate)){
-            throw new IllegalArgumentException("The date is not clear. Try the other format");
+            throw new IllegalArgumentException(expectedExceptionText);
         }
     }
 }

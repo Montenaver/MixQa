@@ -3,6 +3,7 @@ package com.google;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.SelenideElement;
+import org.testng.Assert;
 
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -13,7 +14,7 @@ import static com.codeborne.selenide.Selenide.*;
 
 public class SearchResultPage extends BasePage{
     private static final SelenideElement resultStats = $("#result-stats");
-    private static final ElementsCollection articles = $$x("//div[@class='notranslate TbwUpd YmJh3d NJjxre iUh30 ojE3Fb']");
+    private static final ElementsCollection articles = $$x("(//div[@class='notranslate TbwUpd NJjxre iUh30 ojE3Fb'])");
     private static final String ARTICLE_PREVIEWS = ".VwiC3b.yXK7lf.lVm3ye.r025kc.hJNv6b";
     private static final String ARTICLE_WITH_VIDEO_PREVIEWS = ".fzUZNc";
     private static final SelenideElement showingResultsForBlock = $("#fprsl");
@@ -34,43 +35,43 @@ public class SearchResultPage extends BasePage{
         return this;
     }
     public SearchResultPage checkResultStatistics(){
-        //проверяем сообщение о количестве найденных результатов
         logger.info("Check result statistics displayed");
         resultStats.shouldBe(visible).shouldHave(matchText(REGEX_RESULT_STATS));
         return this;
     }
+    public void articlesFound(String request){
+        logger.info("Check articles for the request are found");
+        if (!requestHasWords(request) && !resultIsNull()) {
+            Assert.assertNotEquals(articles.filter(visible).size(), 0,"Content was found, but there are no articles indicated on the page");
+        } else if (!requestHasWords(request)){
+            new NoResultPage().searchPageIsEmpty();
+        }
+    }
     public void checkArticlesMatchRequest(String request){
-        //Проверяем, что текст запроса соответствует найденным статьям (в упрощенной форме, просто делим запрос на слова и ищем совпадения)
         logger.info("Check found articles");
         int foundArticles = articles.filter(visible).size();
 
-        //если нет результатов на странице, проверяем, что отображается страница без результатов
-        if (resultIsNull()){
-            NoResultPage noResultPage = new NoResultPage();
-            noResultPage.searchPageIsEmpty();
-        } else {
-            //если в запросе только спецсимволы и числа, просто считаем сколько статей вернула программа (не проверяем корректность текста статей)
-            if (requestHasWords(request)) {
-                if (requestHasTypo()) {//если есть опечатка, берем текст запроса из предложенного Google
-                    request = showingResultsForBlock.getText();
-                    logger.info("There is a typo in the request. The matches will be count for the request: {}", request);
-                }
-                //разделяем запрос на слова смотрим, что эти слова встречаюся в заголовке или превью найденных статей
-                String[] queryWords = splitRequest(request);
-                int[] articlesMatch = matchesInTitleAndPreview(queryWords);
+        if (!resultIsNull() && requestHasWords(request)){
+            request = requestHasTypo(request);
+            String[] queryWords = splitRequest(request);
+            int[] articlesMatch = matchesInTitleAndPreview(queryWords);
 
-                if (foundArticles != 0) {
-                    String result = getString(articlesMatch, foundArticles);
-                    //выводим статистику по совпадению найднных статей с запросом
-                    logger.info(result);
-                }
-            } else {
-                logger.info("{} articles are displayed for the request: {}",foundArticles, request);
+            if (foundArticles != 0) {
+                String result = getString(articlesMatch, foundArticles);
+                logger.info(result);
             }
+        } else if (!resultIsNull()) {
+            articlesFound(request);
+        } else {
+            new NoResultPage().searchPageIsEmpty();
         }
     }
-    private static boolean requestHasTypo(){
-        return showingResultsForBlock.is(visible);
+    private static String requestHasTypo(String request){
+        if (showingResultsForBlock.is(visible)) {
+            request = showingResultsForBlock.getText();
+            logger.info("There is a typo in the request. The matches will be count for the request: {}", request);
+        }
+        return request;
     }
     private int[] matchesInTitleAndPreview(String[] queryWords){
         int fullMatch = 0;
