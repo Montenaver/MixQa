@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import static com.codeborne.selenide.Selenide.$;
 
 public class BasePage {
-    protected final SelenideElement searchFld = $("#APjFqb");
+    protected static final SelenideElement searchFld = $("#APjFqb");
     protected static final Logger logger = LogManager.getLogger(BasePage.class);
 
     protected static boolean requestHasWords(String request){

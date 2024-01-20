@@ -10,8 +10,8 @@ public class GoogleSearchDataProvider {
                 {"frog crocodile cat dog"},//with ARTICLE_WITH_VIDEO_PREVIEWS
                 {"copyboook peglet"},//2 words with typo
                 {"seeson flight tickes"},//2 words with typo
-                {"huohohuhohotfytftrsdswwq"},//no result
-                {"(*&$#%%)*_)"}//no words
+                {"jjijeirwerijire"},//no result
+                {"*^4234 ^&*34 2$ %3$%"}//no words
         };
     }
     @DataProvider(name="noResultRequest")
